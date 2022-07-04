@@ -42,7 +42,7 @@ free download: `https://drive.google.com/file/d/1qdfbHeztSIcEfSl2ohyhEo4klQVLE9P
   * 8. R-base and R-studio <br/>
 Lastest `R-base` version: `https://cran.r-project.org/bin/windows/base/`<br/>
 Latest `R-studio` version: `https://rstudio.com/products/rstudio/download/`<br/>
-  * 9.Figtree 1.4<br/>
+  * 9. Figtree 1.4<br/>
 `https://github.com/rambaut/figtree/releases`<br/>
 Download ".zip" file<br/>
 # Adding more programs for running
