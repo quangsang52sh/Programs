@@ -58,6 +58,7 @@ ________#New Software_____________________________________________<br/>
  Running muscle: Drag muscle that you've already downloaded to CMD and run with parameter -align file_fasta -outfile outoutFile.fasta<br/>
  e.g: `muscle.exe -align file_fasta -outfile outoutFile.fasta`<br/>
  Listing help to know what you want: `muscle.exe -h`<br/>
+ Command line link to website: `https://drive5.com/muscle5/manual/commands.html`<br/>
  __________________________________________<br/>
  * All command here: <br/>
  `Align` sequences to generate MSA or ensemble<br/>
