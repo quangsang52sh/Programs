@@ -56,8 +56,8 @@ ________#New Software_____________________________________________<br/>
  Type: `dir` to list your directory and show where you are<br/>
  Type: `cd` + `directory containing fasta` and then `dir` to list again the files in folder<br>
  Running muscle: Drag muscle that you've already downloaded to CMD and run with parameter -align file_fasta -outfile outoutFile.fasta<br/>
- e.g: muscle.exe -align file_fasta -outfile outoutFile.fasta<br/>
- Listing help to know what you want: muscle.exe -h<br/>
+ e.g: `muscle.exe -align file_fasta -outfile outoutFile.fasta`<br/>
+ Listing help to know what you want: `muscle.exe -h`<br/>
  __________________________________________<br/>
  * All command here: <br/>
  `Align` sequences to generate MSA or ensemble<br/>
