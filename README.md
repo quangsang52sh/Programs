@@ -45,6 +45,34 @@ Latest `R-studio` version: `https://rstudio.com/products/rstudio/download/`<br/>
   * 9. Figtree 1.4<br/>
 `https://github.com/rambaut/figtree/releases`<br/>
 Download ".zip" file<br/>
+________#New Software_____________________________________________<br/>
+ * 10. Muscle v5<br/>
+ Latest version: `https://github.com/rcedgar/muscle/releases/tag/5.1.0`<br/>
+ Click `muscle5.1.win64.exe` to download window version<br/>
+ Other versions depend on your flatform.<br/>
+ ------<br/>
+ How to run Muscle: <br/>
+ Window + R to open CMD command line / or search `cmd` in search bar <br/>
+ Type: `dir` to list your directory and show where you are<br/>
+ Type: `cd` + `directory containing fasta` and then `dir` to list again the files in folder<br>
+ Running muscle: Drag muscle that you've already downloaded to CMD and run with parameter -align file_fasta -outfile outoutFile.fasta<br/>
+ e.g: muscle.exe -align file_fasta -outfile outoutFile.fasta<br/>
+ Listing help to know what you want: muscle.exe -h<br/>
+ __________________________________________<br/>
+ * All command here: <br/>
+ `Align` sequences to generate MSA or ensemble<br/>
+ `align` : Align sequences using the PPP algorithm<br/>
+ `super5` : Align large datasets using the Super5 algorithm<br/>
+  * Manipulate ensembles<br/>
+ `efastats` : Report miscellaneous information about MSAs<br/>
+ `efa_explode` :  Extract FASTA files from EFA file<br/>
+ `fa2efa`   :    Combine FASTA files into one EFA file<br/>
+ `disperse`  :   Calculate the dispersion of an ensemble<br/>
+ `addconfseqs` : Calculate column confidences<br/>
+ `letterconf`  :  Calculate letter confidences<br/>
+ `maxcc`    :    Extract MSA with highest CC<br/>
+ `resample`  :   Generate resampled ensemble<br/>
+ ______________________<br/>
 # Adding more programs for running
   * Comming Soon!<br/>
 
