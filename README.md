@@ -58,7 +58,7 @@ ________#New Software_____________________________________________<br/>
  Running muscle: Drag muscle that you've already downloaded to CMD and run with parameter -align file_fasta -outfile outoutFile.fasta<br/>
  e.g: `muscle.exe -align file_fasta -outfile outoutFile.fasta`<br/>
  Listing help to know what you want: `muscle.exe -h`<br/>
- If get issue with `vcomp.dll`, try to install `vcomp.dll` in `Adding more programs for running` below <br/>
+ If get issue with `vcomp.dll` or `vcomp140.dll`, try to install in `Adding more programs for running` below <br/>
  Command line link to website: `https://drive5.com/muscle5/manual/commands.html`<br/>
  __________________________________________<br/>
  * All command here: <br/>
@@ -86,9 +86,14 @@ Download file as below <br/>
 *_2. net framwork_*
 `https://drive.google.com/file/d/1GFBylMdiYv4wNcb5FVHBsk5U2eSfvoqw/view?usp=sharing`<br/>
 *_3. vcomp.dll_*<br/>
+- `vcomp.dll`<br/>
 `x32:https://drive.google.com/file/d/1yxxXb9V7COKYDbMJNdl-FnbyI5IbzrCI/view?usp=drivesdk`<br/>
 `x64:https://drive.google.com/file/d/119Vg10oAYsSJsmtQkSa9l1VgG1RrNCIV/view?usp=drivesdk`<br/>
-Copy x32 in your `System32` and x64 in your `System64` folders<br/>
+- `vcomp140.dll`<br/>
+`x32:https://drive.google.com/file/d/1UnC1E38kkPLf9Y0x4q8bekwLo7KbmXz8/view?usp=drivesdk`<br/>
+`x64:https://drive.google.com/file/d/1n_KZUzkw43tEMDghTQjpXgbe5bWKaXBD/view?usp=drivesdk`<br/>
+Copy x32 in your `windown/System32` and x64 in your `windown/SysWOW64` folders<br/>
+Restart to change files.<br/>
 # If you get an issue, don't hesitate to open your emergency call +84975359004 (my mobile phone :D)
 
 
