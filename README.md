@@ -84,7 +84,7 @@ Download file as below <br/>
 `https://drive.google.com/file/d/12praDZz11GWWv381dqSvq_LruM_fMUYb/view?usp=sharing`<br/>
 *_2. net framwork_*
 `https://drive.google.com/file/d/1GFBylMdiYv4wNcb5FVHBsk5U2eSfvoqw/view?usp=sharing`<br/>
-*_3. vcomp.dll_*
+*_3. vcomp.dll_*<br/>
 x32:<br/>
 x64:<br/>
 # If you get an issue, don't hesitate to open your emergency call +84975359004 (my mobile phone :D)
