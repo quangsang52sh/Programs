@@ -33,6 +33,9 @@ File crack: `https://drive.google.com/file/d/1QXsY4o8DLM4IuPVNoN4NehkYvGWk_I2O/v
 Click `MrBayes-3.2.7-WIN.zip` to download<br/>
 -Extract zip file<br/>
 -Following this path MrBayes-3.2.7-WIN/bin/ to open file (choose x86 or x64 it is up to your PC)<br/>
+You can use `mega`, or other programs to convert file <br/>
+Or you can use online website below to convert it   `http://phylogeny.lirmm.fr/phylo_cgi/data_converter.cgi`<br/>
+
   * 5. Treeview 1.6<br/>
 free download: `https://treeview.software.informer.com/download/`<br/>
   * 6. Java <br/>
@@ -103,6 +106,7 @@ Download file as below <br/>
 `x64:https://drive.google.com/file/d/1n_KZUzkw43tEMDghTQjpXgbe5bWKaXBD/view?usp=drivesdk`<br/>
 Copy x32 in your `windown/System32` and x64 in your `windown/SysWOW64` folders<br/>
 Restart to change files.<br/>
+
 # If you get an issue, don't hesitate to open your emergency call +84975359004 (my mobile phone :D)
 
 
