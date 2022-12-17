@@ -75,6 +75,15 @@ ________#New Software_____________________________________________<br/>
  `maxcc`    :    Extract MSA with highest CC<br/>
  `resample`  :   Generate resampled ensemble<br/>
  ______________________<br/>
+ 
+ 
+  * 11. iTOL: Interactive Tree Of Life <br/>
+ This web server will perform tree data as `.nwk`, `.nexus` or `.phylip` of input file.<br/>
+ So please convert to .nwk or .phylip file prior to upload the tree on website<br/>
+ Accessing website after having the tree file:     https://itol.embl.de/<br/> _*
+ In top of the bar: Click 'Upload' to input tree file<br/>
+ Configuring tree like your style...<br/>
+ 
 # Adding more programs for running
   * Comming Soon!<br/>
 
@@ -97,6 +106,7 @@ Restart to change files.<br/>
 # If you get an issue, don't hesitate to open your emergency call +84975359004 (my mobile phone :D)
 
 
+ 
 
 
 
