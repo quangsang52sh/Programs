@@ -10,7 +10,7 @@ begin mrbayes;
 Lset  nst=6  rates=invgamma;
 Prset statefreqpr=dirichlet(1,1,1,1);
 
-mcmc ngen=10000 printfreq=100 samplefreq=100 nchains=4 savebrlens=yes;
+mcmc ngen=1000000 printfreq=100 samplefreq=100 nchains=4 savebrlens=yes;
 sumt burnin=1000;
   sump;
   [!plot filename=mrbayes_input.nexus.run1.p match=all;]
