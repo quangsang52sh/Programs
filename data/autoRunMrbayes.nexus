@@ -1,0 +1,20 @@
+#NEXUS
+
+begin mrbayes;
+	log start file = TreeMrbayes.log replace;
+	
+		
+	
+[!MrBayes settings for the best-fit model (GTR+I+G) selected by AIC in MrModeltest 2.2]
+
+Lset  nst=6  rates=invgamma;
+Prset statefreqpr=dirichlet(1,1,1,1);
+
+mcmc ngen=1000000 printfreq=1000 samplefreq=100 nchains=4 savebrlens=yes;
+sumt burnin=1000;
+  sump;
+  plot filename=Tree1.nex.run1.p match=all;
+  plot filename=Tree2.nex.run2.p match=all;
+  log stop;
+
+end;
