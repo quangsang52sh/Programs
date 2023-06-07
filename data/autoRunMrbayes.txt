@@ -2,7 +2,7 @@ set autoclose=yes nowarnings=yes
 execute ./mrbayes_input.nexus
 lset nst=6 rates=invgamma
 prset statefreqpr=dirichlet(1,1,1,1)
-mcmc ngen=100000 printfreq=100 samplefreq=100 diagnfreq=1000 nchains=4 savebrlens=yes
+mcmc ngen=1000000 printfreq=100 samplefreq=100 diagnfreq=1000 nchains=4 savebrlens=yes
 sumt burnin=1000
 sump
 quit
