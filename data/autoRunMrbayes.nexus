@@ -16,6 +16,7 @@ sumt burnin=1000;
   [!plot filename=mrbayes_input.nexus.run1.p match=all;]
   [!plot filename=mrbayes_input.nexus.run2.p match=all;]
   [!log stop;]
+  quit;
 end;
 
 
