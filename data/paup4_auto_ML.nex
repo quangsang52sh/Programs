@@ -1,0 +1,16 @@
+#nexus
+BEGIN PAUP;
+set autoclose=yes warntree=no warnreset=no;
+SET MAXTREES=100 tcompress=yes torder=left showtaxnum=yes taxlabels=full;
+SET storetreewts=yes;
+set criterion=likelihood;
+LOG start file=paup.log replace=yes;
+execute paup_input.nexus;
+cstatus;
+LSET nst=6 rates=gamma;
+bootstrap nreps=1000 conlevel=50 grpfreq=yes keepall=yes brlens=yes treefile=bootstrap1000.trees replace=yes search=heuristic / addseq=random nreps=50 nchuck=1000 chuckscore=1;
+SAVETREES from=1 to=1 file=ML_bootstrap_consensus.tree savebootp=nodelabels;
+CONTREE / treefile=ML_consensus.tree majrule=yes le50=yes percent=50 outroot=monophyl;
+LOG stop;
+Quit;
+END;
