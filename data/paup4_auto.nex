@@ -1,7 +1,7 @@
 #nexus
 BEGIN PAUP;
 set autoclose=yes warntree=no warnreset=no;
-SET MAXTREES=10000 tcompress=yes torder=left showtaxnum=yes taxlabels=full;
+SET MAXTREES=1000 tcompress=yes torder=left showtaxnum=yes taxlabels=full;
 SET storetreewts=yes;
 LOG start file=paup.log replace=yes;
 execute paup_input.nexus;
