@@ -33,6 +33,9 @@ File crack: `https://drive.google.com/file/d/1QXsY4o8DLM4IuPVNoN4NehkYvGWk_I2O/v
 Click `MrBayes-3.2.7-WIN.zip` to download<br/>
 -Extract zip file<br/>
 -Following this path MrBayes-3.2.7-WIN/bin/ to open file (choose x86 or x64 it is up to your PC)<br/>
+You can use `mega`, or other programs to convert file <br/>
+Or you can use online website below to convert it   `http://phylogeny.lirmm.fr/phylo_cgi/data_converter.cgi`<br/>
+
   * 5. Treeview 1.6<br/>
 free download: `https://treeview.software.informer.com/download/`<br/>
   * 6. Java <br/>
@@ -45,6 +48,45 @@ Latest `R-studio` version: `https://rstudio.com/products/rstudio/download/`<br/>
   * 9. Figtree 1.4<br/>
 `https://github.com/rambaut/figtree/releases`<br/>
 Download ".zip" file<br/>
+________#New Software_____________________________________________<br/>
+ * 10. Muscle v5<br/>
+ Latest version: `https://github.com/rcedgar/muscle/releases/tag/5.1.0`<br/>
+ Click `muscle5.1.win64.exe` to download window version<br/>
+ Other versions depend on your flatform.<br/>
+ ------<br/>
+ How to run Muscle: <br/>
+ Window + R to open CMD command line / or search `cmd` in search bar <br/>
+ Type: `dir` to list your directory and show where you are<br/>
+ Type: `cd` + `directory containing fasta` and then `dir` to list again the files in folder<br>
+ Running muscle: Drag muscle that you've already downloaded to CMD and run with parameter -align file_fasta -outfile outoutFile.fasta<br/>
+ e.g: `muscle.exe -align file_fasta -outfile outoutFile.fasta`<br/>
+ Listing help to know what you want: `muscle.exe -h`<br/>
+ If get issue with `vcomp.dll` or `vcomp140.dll`, try to install in `Adding more programs for running` below <br/>
+ Command line link to website: `https://drive5.com/muscle5/manual/commands.html`<br/>
+ __________________________________________<br/>
+ * All command here: <br/>
+ `Align` sequences to generate MSA or ensemble<br/>
+ `align` : Align sequences using the PPP algorithm<br/>
+ `super5` : Align large datasets using the Super5 algorithm<br/>
+  * Manipulate ensembles<br/>
+ `efastats` : Report miscellaneous information about MSAs<br/>
+ `efa_explode` :  Extract FASTA files from EFA file<br/>
+ `fa2efa`   :    Combine FASTA files into one EFA file<br/>
+ `disperse`  :   Calculate the dispersion of an ensemble<br/>
+ `addconfseqs` : Calculate column confidences<br/>
+ `letterconf`  :  Calculate letter confidences<br/>
+ `maxcc`    :    Extract MSA with highest CC<br/>
+ `resample`  :   Generate resampled ensemble<br/>
+ ______________________<br/>
+ 
+ 
+  * 11. iTOL: Interactive Tree Of Life <br/>
+ This web server will perform tree data as `.nwk`, `.nexus` or `.phylip` of input file.<br/>
+ So please convert to .nwk or .phylip file prior to upload the tree on website<br/>
+ Accessing website after having the tree file:     https://itol.embl.de/<br/> _*
+ In top of the bar: Click 'Upload' to input tree file<br/>
+ Configuring tree like your style...<br/>
+ 
 # Adding more programs for running
   * Comming Soon!<br/>
 
@@ -54,7 +96,16 @@ Download file as below <br/>
 *_1. Patch mrbayes (for mrbayes)_*
 `https://drive.google.com/file/d/12praDZz11GWWv381dqSvq_LruM_fMUYb/view?usp=sharing`<br/>
 *_2. net framwork_*
-`https://drive.google.com/file/d/1GFBylMdiYv4wNcb5FVHBsk5U2eSfvoqw/view?usp=sharing`
+`https://drive.google.com/file/d/1GFBylMdiYv4wNcb5FVHBsk5U2eSfvoqw/view?usp=sharing`<br/>
+*_3. vcomp.dll_*<br/>
+- `vcomp.dll`<br/>
+`x32:https://drive.google.com/file/d/1yxxXb9V7COKYDbMJNdl-FnbyI5IbzrCI/view?usp=drivesdk`<br/>
+`x64:https://drive.google.com/file/d/119Vg10oAYsSJsmtQkSa9l1VgG1RrNCIV/view?usp=drivesdk`<br/>
+- `vcomp140.dll`<br/>
+`x32:https://drive.google.com/file/d/1UnC1E38kkPLf9Y0x4q8bekwLo7KbmXz8/view?usp=drivesdk`<br/>
+`x64:https://drive.google.com/file/d/1n_KZUzkw43tEMDghTQjpXgbe5bWKaXBD/view?usp=drivesdk`<br/>
+Copy x32 in your `windown/System32` and x64 in your `windown/SysWOW64` folders<br/>
+Restart to change files.<br/>
 
 # If you encounter any issues, don't hesitate to contact me in email.
 PhD student <br/>
@@ -63,6 +114,7 @@ sangtq@ntu.edu.vn <br/>
 
 
 
+ 
 
 
 
