@@ -1,7 +1,6 @@
 # Load required libraries
 library(ape)          # Phylogenetic trees & distance matrices
-library(phangorn)     # UPGMA clustering
-library(phylotaR)     # Robinson-Foulds distance calculation
+library(phangorn)     # UPGMA clustering & RF distance
 library(ggplot2)      # Visualization
 library(Biostrings)   # FASTA file parsing
 library(seqinr)       # Alternative sequence handling
@@ -69,16 +68,13 @@ ILD_analysis <- function(infile, output_directory = ".") {
     
     # Ensure trees are valid
     if (!inherits(tree1, "phylo") | !inherits(tree2, "phylo")) {
-      stop("Error: One or both UPGMA trees were not created properly.")
+      warning("Warning: One or both UPGMA trees were not created properly. Skipping subset.")
+      next
     }
     
-    # Correctly access tree properties
-    tree1_tips <- length(tree1$tip.label) # Corrected from tree_1@tips
-    tree2_tips <- length(tree2$tip.label) # Corrected from tree_2@tips
-
-    # Compute Robinson-Foulds distance
+    # Compute Robinson-Foulds distance using phangorn (Fix for `@` error)
     rf_distance <- tryCatch({
-      calcDstRF(tree1, tree2)
+      RF.dist(tree1, tree2)  # Corrected function
     }, error = function(e) {
       warning("Robinson-Foulds distance calculation failed: ", e$message)
       return(NA)
