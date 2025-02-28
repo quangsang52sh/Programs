@@ -80,9 +80,11 @@ ILD_analysis <- function(infile, output_directory = ".") {
       return(NA)
     })
     
-    # Compute probability and phylogenetic information content
-    probability_match <- ifelse(is.na(rf_distance), NA, rf_distance / n_splits)
-    phylo_info <- ifelse(probability_match > 0, -log2(probability_match), NA)
+    # Ensure nonzero values for probability match
+    probability_match <- ifelse(is.na(rf_distance) | rf_distance == 0, 0.0001, rf_distance / n_splits)
+    
+    # Fix log(0) issue by setting min limit for probability match
+    phylo_info <- ifelse(probability_match > 0, -log2(probability_match), 0)
     
     # Append results
     results <- rbind(results, data.frame(
