@@ -228,7 +228,8 @@ tidy.modelTest <- function(x){
 
 # Model selection using ML
 model <- modelTest(dat)
-write.csv(model, file = "MLmodel.csv")
+#write.csv(model, file = "MLmodel.csv")
+write_tsv(model, "MLmodel.tsv",col_names=T)
 env <- attr(model, "env")
 ls(env=env)
   #best_model <- model[which.min(model$AIC), "Model"]
