@@ -1,6 +1,7 @@
 library(shiny)
 library(ape)
 library(phangorn)
+library(tidyverse)
 
 run_ML <- function(dat, boostrap) {
 #Input modeltest Function 
@@ -650,7 +651,8 @@ server <- function(input, output, session) {
 
       # Run model test
       model_results <- modelTest(dat)
-      write.csv(model_results, file = "MLmodel_checking.csv")
+      #write.csv(model_results, file = "MLmodel_checking.csv")
+      write_tsv(model_results, "MLmodel_checking_tsv",col_names=T)
       # Get best model based on minimum AIC
       best_model <- model_results[which.min(model_results$AIC), "Model"]
       bestModel(best_model)  # Store best model
