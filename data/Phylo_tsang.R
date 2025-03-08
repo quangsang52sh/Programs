@@ -1,53 +1,8 @@
-# Load required packages
-if (!require("ape")) {
-  install.packages("ape")
-}
+library(shiny)
 library(ape)
-if (!require("phangorn")) {
-  install.packages("phangorn")
-}
 library(phangorn)
-#if (!require("tidyverse")) {
-#  install.packages("tidyverse")
-#}
-#library(tidyverse)
-if (!require("zip")) {
-  install.packages("zip")
-}
-library(zip)
-  
-ID_name="tsang"
-#print
-options(max.print=1000000)
-# Information input
-cat("
 
-##################################################################################################
-##################################################################################################
-##                               Phylogenetic tree (version 3.2)                                ##
-##                               Welcome to tsang script !.....                                 ##
-##                               This is LIMITTED VERSION by tsang                              ##
-##                               Email: sangtq@ntu.edu.vn                                       ##
-##################################################################################################
-##################################################################################################
-")
-cat("\n________________________Greeting to you", ID_name," ....  ________________________________________\n\n")
-cat("
-Please! Prior to running this script, following this tutorior
-1) open Rscript and type 'source(tsang_script.R)', if already source, try to next step
-2) runPhylogeneticAnalysis(file_name, ML = 'FALSE', NJ = 'FALSE', MP = 'FALSE', Mrbayes = 'FALSE', RaxML = 'FALSE', modeltestNG = 'FALSE', without_modeltest='FALSE', Model='GTR+G+I')
-if run ML, turn into TRUE 
-if run NL, turn into TRUE
-if run MP, turn into TRUE
-if you are already run model test and has a name like 'GTR+G+I', please use (without_modeltest='TRUE', Model='GTR+I'), if not type modelname, this is automatic run un default GTR+G+I
-if run modeltest only, try to (modeltestNG = TRUE)
-if run RaxML with modeltest, try to run modeltestNG first ( modeltestNG = 'TRUE') and then run RaxML (RaxML = 'TRUE', Model = 'modeltestNG[name]')
-Thank you!
-Tsang
-
-")
-
-run_ML <- function(dat) {
+run_ML <- function(dat, boostrap) {
 #Input modeltest Function 
 aic.weights <- function(aic){
   diff.aic <- aic-min(aic)
@@ -299,147 +254,491 @@ ls(env=env)
   } else {
     fit1 <- optim.pml(fit, model = best_model, optInv = FALSE, optGamma = FALSE, rearrangement = "none", control = pml.control(trace = 0))
   }
-  bs <- bootstrap.pml(fit1, bs = 1000, optNni = TRUE, control = pml.control(trace = 2))
+  bs <- bootstrap.pml(fit1, bs = boostrap, optNni = TRUE, control = pml.control(trace = 2))
   tree <- plotBS(midpoint(fit1$tree), bs, p = 50, type = "p")
   write.tree(tree, "MLtree.tre")
   save.image("runML.Rdata")
 }
 
-run_ML_withoutModel <- function(dat, modelname) {
-
-  best_model <- modelname
+run_ML_withoutModel <- function(dat, modelname, bootstrap) {
+  best_model <- modelname  # Get model from input
   dm <- dist.ml(dat)
   treeNJ <- NJ(dm)
   fit <- pml(treeNJ, data = dat)
-  # Extract the prefix e.g. "GTR" from getModel
-  modelPrefix <- substr(best_model, 1, regexpr("\\+", best_model) - 1)
-  m1=paste0(modelPrefix, "+G+I")
-  m2=paste0(modelPrefix, "+G")
-  m3=paste0(modelPrefix, "+I")
+
+  # Extract base model name (e.g., "GTR" from "GTR+G+I")
+  modelPrefix <- unlist(strsplit(best_model, "\\+"))[1]
+
+  # Define model variations
+  m1 <- paste0(modelPrefix, "+G+I")
+  m2 <- paste0(modelPrefix, "+G")
+  m3 <- paste0(modelPrefix, "+I")
+
+  # Run optimization based on model
   if (best_model == m1) {
-    fit1 <- optim.pml(fit, model = modelPrefix, optInv = TRUE, optGamma = TRUE, rearrangement = "none", control = pml.control(trace = 0))
+    fit1 <- optim.pml(fit, model = modelPrefix, optInv = TRUE, optGamma = TRUE, 
+                      rearrangement = "none", control = pml.control(trace = 0))
   } else if (best_model == m2) {
-    fit1 <- optim.pml(fit, model = modelPrefix, optInv = FALSE, optGamma = TRUE, rearrangement = "none", control = pml.control(trace = 0))
+    fit1 <- optim.pml(fit, model = modelPrefix, optInv = FALSE, optGamma = TRUE, 
+                      rearrangement = "none", control = pml.control(trace = 0))
   } else if (best_model == m3) {
-    fit1 <- optim.pml(fit, model = modelPrefix, optInv = TRUE, optGamma = FALSE, rearrangement = "none", control = pml.control(trace = 0))
+    fit1 <- optim.pml(fit, model = modelPrefix, optInv = TRUE, optGamma = FALSE, 
+                      rearrangement = "none", control = pml.control(trace = 0))
   } else {
-    fit1 <- optim.pml(fit, model = best_model, optInv = FALSE, optGamma = FALSE, rearrangement = "none", control = pml.control(trace = 0))
+    fit1 <- optim.pml(fit, model = modelPrefix, optInv = FALSE, optGamma = FALSE, 
+                      rearrangement = "none", control = pml.control(trace = 0))
   }
-  bs <- bootstrap.pml(fit1, bs = 1000, optNni = TRUE, control = pml.control(trace = 2))
+
+  # Run bootstrap analysis
+  bs <- bootstrap.pml(fit1, bs = bootstrap, optNni = TRUE, control = pml.control(trace = 2))
+
+  # Generate tree
   tree <- plotBS(midpoint(fit1$tree), bs, p = 50, type = "p")
   write.tree(tree, "MLtree_withoutModel.tre")
   save.image("runML_withoutModel.Rdata")
 }
 
-run_MP <- function(dat) {
-# Maximum Parsimony (MP) tree
-MegaMPTree <- pratchet(dat)
-MegaMPTree <- acctran(MegaMPTree, dat)
-bs_megaMP <- bootstrap.phyDat(dat, pratchet, bs = 1000)
-MPTree <- plotBS(midpoint(MegaMPTree), bs_megaMP, p = 50, type = "p")
-add.scale.bar()
-write.tree(MPTree, "MPtree.tre")
-save.image("runMP.Rdata")
+
+run_MrBayes <- function(dat) {
+  sys_name <- Sys.info()["sysname"]
+  mrbayes_path <- ""
+  output_dir <- paste0(getwd(), "/Mrbayes_results")
+
+  # Ensure output directory exists
+  if (!dir.exists(output_dir)) {
+    dir.create(output_dir)
+  }
+
+  if (sys_name == "Windows") {
+    message("Downloading MrBayes for Windows...")
+    win_url <- "https://github.com/NBISweden/MrBayes/releases/download/v3.2.7/MrBayes-3.2.7-WIN.zip"
+    zip_file <- "MrBayes-3.2.7-WIN.zip"
+    extract_folder <- "MrBayes-3.2.7-WIN"
+
+    # Download if not exists
+    if (!file.exists(zip_file)) {
+      download.file(win_url, zip_file, mode = "wb")
+    }
+
+    # Extract only if not extracted
+    if (!dir.exists(extract_folder)) {
+      unzip(zip_file, exdir = extract_folder)
+    }
+
+    # Ensure correct path to executable
+    mrbayes_path <- file.path(getwd(), extract_folder, "bin", "mb.3.2.7-win64.exe")
+
+    # Check if executable exists
+    if (!file.exists(mrbayes_path)) {
+      stop("❌ Error: MrBayes executable not found! Please check extraction.")
+    }
+    
+  } else if (sys_name == "Linux") {
+    message("Installing MrBayes for Linux...")
+    if (!file.exists("./MrBayes/src/mb")) {
+      system("git clone --depth=1 https://github.com/NBISweden/MrBayes.git")
+      system("cd MrBayes && ./configure && make")
+    }
+    mrbayes_path <- "./MrBayes/src/mb"
+
+  } else if (sys_name == "Darwin") { # macOS
+    message("Downloading MrBayes for macOS...")
+    mac_url <- "https://github.com/NBISweden/MrBayes/releases/download/v3.2.6/MrBayes-3.2.6_MACx64.zip"
+    zip_file <- "MrBayes-3.2.6_MACx64.zip"
+
+    if (!file.exists(zip_file)) {
+      download.file(mac_url, zip_file, mode = "wb")
+    }
+
+    if (!dir.exists("MrBayes")) {
+      unzip(zip_file, exdir = "MrBayes")
+    }
+
+    mrbayes_path <- file.path(getwd(), "MrBayes", "mb")
+
+  } else {
+    stop("❌ Unsupported operating system.")
+  }
+
+  # Ensure MrBayes can run
+  if (!file.exists(mrbayes_path)) {
+    stop("❌ Error: MrBayes executable not found! Please check installation.")
+  }
+
+  # Convert input data to Nexus format
+  bin <- as.DNAbin(dat)
+  nexus_file <- "mrbayes_input.nexus"
+  write.nexus.data(bin, nexus_file)
+
+  # Download autoRunMrbayes.txt if missing
+  auto_file <- "autoRunMrbayes.txt"
+  auto_url <- "https://raw.githubusercontent.com/quangsang52sh/Programs/main/data/autoRunMrbayes.txt"
+
+  if (!file.exists(auto_file)) {
+    message("Downloading MrBayes script...")
+    download.file(auto_url, auto_file, mode = "wb")
+  }
+
+  # Run MrBayes
+  message("Running MrBayes...")
+  system(paste(shQuote(mrbayes_path), "<", auto_file, "> mrbayes_input_log.txt"))
+
+  # Verify if MrBayes ran successfully
+  log_file <- "mrbayes_input_log.txt"
+  if (file.exists(log_file)) {
+    log_contents <- readLines(log_file, n = 20)
+    if (any(grepl("error", tolower(log_contents)))) {
+      stop("❌ Error: MrBayes encountered an issue. Check 'mrbayes_input_log.txt'.")
+    }
+  } else {
+    stop("❌ Error: MrBayes did not create a log file. Please check execution.")
+  }
+
+  # Move output files to result directory
+  tree_file <- paste0("mrbayes_input.nexus.con.tre")
+  run1_file <- paste0("mrbayes_input.nexus.run1.t")
+  run2_file <- paste0("mrbayes_input.nexus.run2.t")
+
+  if (!file.exists(tree_file) || !file.exists(run1_file) || !file.exists(run2_file)) {
+    stop("❌ Error: MrBayes output files were not generated.")
+  }
+
+  file.copy(c(tree_file, run1_file, run2_file), output_dir, overwrite = TRUE)
+
+  message("✅ MrBayes analysis completed successfully!")
 }
 
 
-run_NJ <- function(dat) {
+run_MP <- function(dat, bootstrap) {
+  # Maximum Parsimony (MP) tree
+  MegaMPTree <- pratchet(dat)
+  MegaMPTree <- acctran(MegaMPTree, dat)
+  bs_megaMP <- bootstrap.phyDat(dat, pratchet, bs = bootstrap)
+  MPTree <- plotBS(midpoint(MegaMPTree), bs_megaMP, p = 50, type = "p")
+  add.scale.bar()
+  write.tree(MPTree, "MPtree.tre")
+  save.image("runMP.Rdata")
+}
 
-# Neighbor Joining (NJ) tree
-#myfile <- read.dna(file_name, format = "fasta")
-#dat <- as.phyDat(myfile)
-tree <- nj(dist.ml(dat))
-MegaNJTree <- tree
-bs_megaNJ <- bootstrap.phyDat(dat, FUN = function(x) NJ(dist.hamming(x)), bs = 1000)
-treeNJ <- plotBS(midpoint(MegaNJTree), bs_megaNJ, p = 50, type = "p")
-write.tree(treeNJ, "NJtree.tre")
-save.image("runNJ.Rdata")
+run_NJ <- function(dat, bootstrap) {
+  tree <- nj(dist.ml(dat))
+  MegaNJTree <- tree
+  bs_megaNJ <- bootstrap.phyDat(dat, FUN = function(x) NJ(dist.hamming(x)), bs = bootstrap)
+  treeNJ <- plotBS(midpoint(MegaNJTree), bs_megaNJ, p = 50, type = "p")
+  write.tree(treeNJ, "NJtree.tre")
+  save.image("runNJ.Rdata")
+}
+
+runPhylogeneticAnalysis <- function(file, NJ = FALSE, MP = FALSE, ML = FALSE, Mrbayes = FALSE, run_ML_withoutModel = FALSE, modelname, bootstrap) {
+  withProgress(message = "Running analysis...", value = 0, {
+    setProgress(0)
+    
+    if (NJ) {
+      myfile <- read.dna(file$datapath, format = "fasta")
+      dat <- as.phyDat(myfile)
+      run_NJ(dat, bootstrap)
+    }
+
+    if (MP) {
+      myfile <- read.dna(file$datapath, format = "fasta")
+      dat <- as.phyDat(myfile)
+      run_MP(dat, bootstrap)
+    }
+
+    if (ML) {
+      myfile <- read.dna(file$datapath, format = "fasta")
+      dat <- as.phyDat(myfile)
+      run_ML(dat, bootstrap)
+    }
+
+    if (Mrbayes) {
+      myfile <- read.dna(file$datapath, format = "fasta")
+      dat <- as.phyDat(myfile)
+      run_MrBayes(dat)
+    }
+
+
+    if (run_ML_withoutModel) {
+      myfile <- read.dna(file$datapath, format = "fasta")
+      dat <- as.phyDat(myfile)
+      run_ML_withoutModel(dat, modelname, bootstrap)
+    }
+    
+    setProgress(1)
+    Sys.sleep(0.5)  # Add a small delay for visual feedback
+  })
+}
+
+ui <- fluidPage(
+  tags$head(
+    # Adjust window size on load
+    tags$script(HTML("
+      window.onload = function() {
+        window.resizeTo(screen.width * 0.8, screen.height * 0.8);
+      }
+    ")),
+    
+    # CSS Styling
+    tags$style(HTML("
+      /* Title Box */
+      .title-box {
+        font-size: 25px;
+        background-color: #f0f0f0;
+        padding: 15px;
+        border-radius: 10px;
+        border: 2px solid #d3d3d3;
+        box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+        margin-bottom: 10px;
+      }
+      /* Title Box Row */
+      .title-row {
+        display: flex; 
+        align-items: center; 
+        justify-content: flex-start;
+      }
+      /* DNA Image in Title */
+      .dna-header {
+        width: 80px;   /* Adjust size as needed */
+        height: auto; 
+        margin-right: 15px;
+      }
+      /* General Body Styling */
+      body {
+        background-color: white;
+        color: blue;
+      }
+      /* Profile Picture */
+      .profile-pic {
+        display: flex;
+        justify-content: center;
+        margin: 10px 0;
+      }
+      .profile-pic img {
+        border-radius: 50%;
+        border: 3px solid #dddddd;
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);
+      }
+      /* Welcome Box */
+      .welcome-box {
+        background-color: #f5f5f5; 
+        padding: 20px; 
+        border: 2px solid #d3d3d3; 
+        border-radius: 10px; 
+        text-align: center; 
+        font-family: monospace; 
+        font-size: 16px; 
+        line-height: 1.6; 
+        width: 90%;
+        max-width: 800px;
+        margin: auto;
+        box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+      }
+    "))
+  ),
+
+  # Title Section with Fixed DNA Animation
+  div(class = "title-box",
+    style = "position: relative; 
+             font-size: 28px; 
+             font-weight: bold; 
+             color: #2E86C1; 
+             background-color: #f0f0f0; 
+             padding: 15px; 
+             border-radius: 10px; 
+             border: 2px solid #d3d3d3;
+             box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+             text-align: center;",  # Keep text centered
+
+    # DNA Animation positioned in the top-left (does not move)
+    div(style = "position: absolute; 
+                 top: 10px; 
+                 left: 10px; 
+                 width: 60px; height: auto;",
+        img(src = "https://raw.githubusercontent.com/quangsang52sh/Programs/main/data/original-770ce4c43c5396a4e2c979eb302f059a.gif", 
+            style = "width: 100%; height: auto;")
+    ),
+    
+    # Keep Title Text Centered
+    HTML("<span style='background-color: green; color: white; font-weight: bold;'>Phylogenetic Analysis (Version 5.0)</span>")
+),
+
+  sidebarLayout(
+    # Sidebar
+    sidebarPanel(
+      width = 4,
+      fileInput("file", "Upload File (Fasta alignment sequence)", accept = c(".fas", ".fasta", ".fa", ".txt", ".tsv")),
+      checkboxGroupInput("tree_methods", "Select Phylogenetic Methods:", 
+                         choices = list("Neighbor Joining (NJ)" = "NJ",
+                                        "Maximum Parsimony (MP)" = "MP",
+                                        "Maximum Likelihood (ML)" = "ML",
+                                        "Bayesian Inference (BI - MrBayes)" = "Mrbayes")),
+      checkboxInput("run_ML_withoutModel", "Run ML Tree (without model test)"),
+      textInput("modelname", "Model Name (for ML without modeltest)", value = "GTR+G(4)+I"),
+      sliderInput("bootstrapSlider", "Bootstrap Value", min = 0, max = 1000, value = 100),
+      actionButton("checkModelButton", "Check Best Model"),
+      verbatimTextOutput("bestModelOutput"),
+      br(), br(),
+      actionButton("runButton", "Run Analysis"),
+      actionButton("stopButton", "Stop Analysis",
+             style = "background-color: darkred; color: white; font-weight: bold;"),
+      br(), br(),
+      actionButton("quitButton", "Quit App", 
+                   style = "background-color: red; color: white; font-weight: bold;")
+    ),
+
+    # Main Panel
+    mainPanel(
+      width = 8,
+      fluidRow(
+        column(width = 12,
+          div(class = "profile-pic",
+              img(src = "https://raw.githubusercontent.com/quangsang52sh/Programs/main/data/51614765.png", 
+                  alt = "Profile Picture")
+          )
+        ),
+        column(width = 8, 
+          verbatimTextOutput("output"), 
+          uiOutput("greeting"), 
+          verbatimTextOutput("progressText")
+        ),
+        column(width = 12,
+          div(class = "welcome-box",
+    style = "background-color: #f5f5f5; 
+             padding: 15px; 
+             border: 2px solid #d3d3d3; 
+             border-radius: 10px; 
+             text-align: left; 
+             font-family: monospace; 
+             font-size: 17px;
+             font-weight: bold;
+             white-space: pre-wrap; 
+             max-width: 600px;
+             word-wrap: break-word;
+             overflow: hidden;
+             margin: auto;
+             box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);",
+    
+    HTML("<pre style='font-family: monospace; font-size: 17px; text-align: left; line-height: 1.4;'>
+##############################################
+Welcome to Tsang Script!                     
+Sang Tran Quang  <span style='background-color: blue; color: white; font-weight: bold;'>(LIMITED VERSION)</span>           
+Email: <a href='mailto:sangtq@ntu.edu.vn'>sangtq@ntu.edu.vn</a>                   
+Rscript 5.0, Automation Analysis by TSANG              
+##############################################
+    </pre>")
+          )
+        )
+      )
+    )
+  )
+)
+
+
+
+server <- function(input, output, session) {
+  analysisDone <- reactiveVal(FALSE)
+  bestModel <- reactiveVal(NULL)
+
+  # Model Checking
+  observeEvent(input$checkModelButton, {
+    if (!is.null(input$file)) {
+      myfile <- read.dna(input$file$datapath, format = "fasta")
+      dat <- as.phyDat(myfile)
+
+      # Run model test
+      model_results <- modelTest(dat)
+      write.csv(model_results, file = "MLmodel_checking.csv")
+      # Get best model based on minimum AIC
+      best_model <- model_results[which.min(model_results$AIC), "Model"]
+      bestModel(best_model)  # Store best model
+    }
+  })
+
+  output$bestModelOutput <- renderText({
+    if (!is.null(bestModel())) {
+      paste("Best Model Selected:", bestModel())
+    } else {
+      "Click 'Check Best Model' to determine the best model."
+    }
+  })
+
+ # Running Analysis with Progress Bar
+observeEvent(input$runButton, {
+  if (!is.null(input$file)) {
+    withProgress(message = "Running Phylogenetic Analysis", value = 0, {
+      
+      # Read input file
+      myfile <- read.dna(input$file$datapath, format = "fasta")
+      dat <- as.phyDat(myfile)
+      
+      incProgress(0.1, detail = "File loaded successfully...")
+
+      # Run NJ safely
+      if (isTRUE("NJ" %in% input$tree_methods)) {
+        run_NJ(dat, input$bootstrapSlider)
+        incProgress(0.2, detail = "Neighbor Joining (NJ) analysis completed...")
+      }
+
+      # Run MP safely
+      if (isTRUE("MP" %in% input$tree_methods)) {
+        run_MP(dat, input$bootstrapSlider)
+        incProgress(0.2, detail = "Maximum Parsimony (MP) analysis completed...")
+      }
+
+      # Run ML safely
+      if (isTRUE("ML" %in% input$tree_methods)) {
+        run_ML(dat, input$bootstrapSlider)
+        incProgress(0.2, detail = "Maximum Likelihood (ML) analysis completed...")
+      }
+
+      # Run ML without model test safely
+      if (isTRUE(input$run_ML_withoutModel)) {
+        run_ML_withoutModel(dat, input$modelname, input$bootstrapSlider)
+        incProgress(0.2, detail = "ML analysis without model test completed...")
+      }
+
+      # Run MrBayes safely
+      if (isTRUE("Mrbayes" %in% input$tree_methods)) {
+        incProgress(0.5, detail = "Running Bayesian Inference (MrBayes)... This may take a while.")
+        run_MrBayes(dat)
+        incProgress(1, detail = "Bayesian analysis completed!")
+      }
+
+      analysisDone(TRUE)
+    })
+  }
+})
+
+  output$progressText <- renderText({
+    if (is.null(input$file) || !analysisDone()) {
+      "Waiting for input file..."
+    } else {
+      "Analysis in progress..."
+    }
+  })
+
+  output$output <- renderText({
+    if (analysisDone()) {
+      "Analysis completed!"
+    }
+  })
+
+  output$greeting <- renderUI({
+    if (!is.null(input$file) && analysisDone()) {
+      HTML("<pre>Have a nice day! ....</pre><pre>Good luck to you ....</pre>")
+    }
+  })
+
+  observeEvent(input$quitButton, {
+    stopApp()  # Stops the Shiny application
+  })
 }
 
 
+phyloApp3 <- function() {
+  shinyApp(ui = ui, server = server) }
 
-runPhylogeneticAnalysis <- function(file_name, ML = FALSE, NJ = FALSE, MP = FALSE, Mrbayes = FALSE, RaxML = FALSE, without_modeltest = FALSE, modeltestNG = FALSE, Model = "GTR+G+I") {
-
-if (ML == "TRUE") {
-    myfile <- read.dna(file_name, format = "fasta")
-    dat <- as.phyDat(myfile)
-    run_ML(dat)
-
-   }
-
-  if (NJ == "TRUE") {
-    myfile <- read.dna(file_name, format = "fasta")
-    dat <- as.phyDat(myfile)
-    run_NJ(dat)
-  } 
-
-  if (MP == "TRUE") {
-    myfile <- read.dna(file_name, format = "fasta")
-    dat <- as.phyDat(myfile)
-    run_MP(dat)
-  }
-  
-  if (Mrbayes == "TRUE") {
-    myfile <- read.dna(file_name, format = "fasta")
-    dat <- as.phyDat(myfile)
-    run_MrBayes(dat)
-  }
-  
-    if ((ML == "TRUE") & (MP == "TRUE")) {
-    myfile <- read.dna(file_name, format = "fasta")
-    dat <- as.phyDat(myfile)
-    run_ML(dat)
-    run_MP(dat)
-   
-  } 
-  
-    if ((ML == "TRUE") & (NJ == "TRUE")) {
-    myfile <- read.dna(file_name, format = "fasta")
-    dat <- as.phyDat(myfile)
-    run_ML(dat)
-    run_NJ(dat)
-   
-  } 
-  
-    if ((NJ == "TRUE") & (MP == "TRUE")) {
-    myfile <- read.dna(file_name, format = "fasta")
-    dat <- as.phyDat(myfile)
-    run_NJ(dat)
-    run_MP(dat)
-   
-  } 
-
-    if ((ML == "TRUE") & (NJ == "TRUE") & (MP == "TRUE")) {
-    myfile <- read.dna(file_name, format = "fasta")
-    dat <- as.phyDat(myfile)
-    run_ML(dat)
-    run_NJ(dat)
-    run_MP(dat)
-   
-  }
-
-    if ((ML == "FASLE") & (NJ == "FALSE") & (MP == "FALSE") & (without_modeltest == "FALSE")) {
-    myfile <- read.dna(file_name, format = "fasta")
-    dat <- as.phyDat(myfile)
-    run_NJ(dat)
-   
-  }
-
-    if (without_modeltest == "TRUE") {
-    myfile <- read.dna(file_name, format = "fasta")
-    dat <- as.phyDat(myfile)
-    run_ML_withoutModel(dat, Model)
-   
-  }
-
-    if (modeltestNG == "TRUE") {
-    run_modeltestNG(file_name)
-   
-  }
-
-    if (RaxML == "TRUE") {
-    run_RaxML(file_name, Model)
-   
-  }
-
-}
+phyloApp3()
