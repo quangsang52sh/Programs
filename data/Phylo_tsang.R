@@ -653,7 +653,7 @@ server <- function(input, output, session) {
 
       # Run model test
       model_results <- modelTest(dat)
-      env <- attr(model, "env")
+      env <- attr(model_results, "env")
       ls(env=env)
       #best_model <- model[which.min(model$AIC), "Model"]
       # Get best model based on minimum AIC
