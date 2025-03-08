@@ -656,16 +656,15 @@ server <- function(input, output, session) {
       env <- attr(model, "env")
       ls(env=env)
       #best_model <- model[which.min(model$AIC), "Model"]
-      best_model <- model[which.min(model$AIC), "Model"]
+      # Get best model based on minimum AIC
+      best_model <- model_results[which.min(model_results$AIC), "Model"]
+      bestModel(best_model)  # Store best model
       getModel <- get(best_model, env)
       your_model <- eval( getModel, env=env)
       #print(your_model)
       save(your_model, file = paste0(best_model,".Rdata"))
       #write.csv(model_results, file = "MLmodel_checking.csv")
       write_tsv(model_results, "MLmodel_checking.tsv",col_names=T)
-      # Get best model based on minimum AIC
-      best_model <- model_results[which.min(model_results$AIC), "Model"]
-      bestModel(best_model)  # Store best model
       print(your_model)
     }
   })
