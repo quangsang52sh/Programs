@@ -236,7 +236,7 @@ ls(env=env)
   best_model <- model[which.min(model$AIC), "Model"]
   getModel <- get(best_model, env)
   your_model <- eval( getModel, env=env)
-  print(your_model)
+  #print(your_model)
   save(your_model, file = paste0(best_model,".Rdata"))
   #getModel <- get(best_model, env)
   dm <- dist.ml(dat)
@@ -260,6 +260,7 @@ ls(env=env)
   tree <- plotBS(midpoint(fit1$tree), bs, p = 50, type = "p")
   write.tree(tree, "MLtree.tre")
   save.image("runML.Rdata")
+  print(your_model)
 }
 
 run_ML_withoutModel <- function(dat, modelname, bootstrap) {
@@ -652,11 +653,20 @@ server <- function(input, output, session) {
 
       # Run model test
       model_results <- modelTest(dat)
+      env <- attr(model, "env")
+      ls(env=env)
+      #best_model <- model[which.min(model$AIC), "Model"]
+      best_model <- model[which.min(model$AIC), "Model"]
+      getModel <- get(best_model, env)
+      your_model <- eval( getModel, env=env)
+      #print(your_model)
+      save(your_model, file = paste0(best_model,".Rdata"))
       #write.csv(model_results, file = "MLmodel_checking.csv")
       write_tsv(model_results, "MLmodel_checking.tsv",col_names=T)
       # Get best model based on minimum AIC
       best_model <- model_results[which.min(model_results$AIC), "Model"]
       bestModel(best_model)  # Store best model
+      print(your_model)
     }
   })
 
